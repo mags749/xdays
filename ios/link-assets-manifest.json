@@ -1,0 +1,45 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/Rajdhani-Bold.ttf",
+      "sha1": "d9c403532e310d0a470f959e65ed283a4f21d7a7"
+    },
+    {
+      "path": "assets/fonts/Rajdhani-Light.ttf",
+      "sha1": "8f180ecd327429e2e6996e3c6431e1c290437599"
+    },
+    {
+      "path": "assets/fonts/Rajdhani-Medium.ttf",
+      "sha1": "21724de5a45db366c69e88083bdd33a7ec3c05e6"
+    },
+    {
+      "path": "assets/fonts/Rajdhani-Regular.ttf",
+      "sha1": "73f086047e7ff11a3087cd481f133f9080a9d954"
+    },
+    {
+      "path": "assets/fonts/Rajdhani-SemiBold.ttf",
+      "sha1": "0fcd923c13976ebcc87b40237e3c5a053a347629"
+    },
+    {
+      "path": "assets/fonts/RedHatMono-Bold.ttf",
+      "sha1": "d8cf68bb03d6200227d017eb36679b8521c74f86"
+    },
+    {
+      "path": "assets/fonts/RedHatMono-Light.ttf",
+      "sha1": "13e37ad108f9cb81aff7e29aba47f56531a3bc18"
+    },
+    {
+      "path": "assets/fonts/RedHatMono-Medium.ttf",
+      "sha1": "7e3c18e72b7b77b71e9f13f03083b88f901d7d4c"
+    },
+    {
+      "path": "assets/fonts/RedHatMono-Regular.ttf",
+      "sha1": "0f225277ad7fef4491631d7219dcdaaa28745224"
+    },
+    {
+      "path": "assets/fonts/RedHatMono-SemiBold.ttf",
+      "sha1": "c9858d322110591008b488c0770f4de2c098df40"
+    }
+  ]
+}
