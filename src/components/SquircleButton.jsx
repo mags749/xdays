@@ -1,6 +1,7 @@
 import React, {memo} from 'react';
 import {TouchableOpacity, View} from 'react-native';
 import {SquircleView} from 'react-native-figma-squircle';
+import {colors} from '../../utils/constants';
 
 const SquircleButton = ({onPress, children, color}) => (
   <TouchableOpacity onPress={onPress}>
@@ -9,7 +10,7 @@ const SquircleButton = ({onPress, children, color}) => (
       squircleParams={{
         cornerSmoothing: 0.9,
         cornerRadius: 12,
-        fillColor: color ? color : 'white',
+        fillColor: color ? color : colors.white.default,
       }}>
       <View className="h-12 w-12 flex justify-center items-center">
         {children}

@@ -1,6 +1,6 @@
 import React, {memo} from 'react';
 import {Text, View} from 'react-native';
-import {fonts} from '../utils/constants';
+import {fonts} from '../../utils/constants';
 
 const NumView = ({num, title}) =>
   num > 0 ? (
@@ -14,7 +14,7 @@ const NumView = ({num, title}) =>
         className="text-black text-bold uppercase"
         style={{fontFamily: fonts.DISPLAY_FONT, fontSize: 12}}>
         {title}
-        {num > 0 ? 's' : ''}
+        {num > 1 ? 's' : ''}
       </Text>
     </View>
   ) : null;

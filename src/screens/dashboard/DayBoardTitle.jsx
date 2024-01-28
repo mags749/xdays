@@ -1,6 +1,6 @@
 import React, {memo} from 'react';
 import {Text, View} from 'react-native';
-import {fonts} from '../utils/constants';
+import {fonts} from '../../utils/constants';
 
 const DayBoardTitle = ({title}) => {
   const words = title.split(' ');
