@@ -1,10 +1,12 @@
-const fonts = {
-  DISPLAY_FONT: 'Rajdhani-SemiBold',
-  DISPLAY_FONT_B: 'Rajdhani-Bold',
-  MAIN_FONT: 'RedHatMono-Medium',
-  MAIN_FONT_B: 'RedHatMono-Bold',
-  MAIN_FONT_SB: 'RedHatMono-SemiBold',
-};
+import {
+  IconArrowLeft,
+  IconCalendarDue,
+  IconCalendarEvent,
+  IconCheck,
+  IconHourglassHigh,
+  IconPlus,
+  IconX,
+} from 'tabler-icons-react-native';
 
 const colors = {
   black: {
@@ -19,17 +21,38 @@ const colors = {
   },
   blue: {
     primary: '#3498db',
-    flat: '#A8EBF9'
+    flat: '#A8EBF9',
   },
   orange: {
-    flat: '#F0B27A'
+    flat: '#F0B27A',
   },
   yellow: {
-    flat: '#FBFE63'
+    flat: '#FBFE63',
   },
   grey: {
-    default: '#BDC3C7'
-  }
+    default: '#BDC3C7',
+  },
+  red: {
+    default: '#c0392b',
+  },
 };
 
-export {colors, fonts};
+const fonts = {
+  DISPLAY_FONT: 'Rajdhani-SemiBold',
+  DISPLAY_FONT_B: 'Rajdhani-Bold',
+  MAIN_FONT: 'RedHatMono-Medium',
+  MAIN_FONT_B: 'RedHatMono-Bold',
+  MAIN_FONT_SB: 'RedHatMono-SemiBold',
+};
+
+const icons = {
+  Add: IconPlus,
+  Back: IconArrowLeft,
+  CalendarEvent: IconCalendarEvent,
+  CalenderDate: IconCalendarDue,
+  Check: IconCheck,
+  HourGlass: IconHourglassHigh,
+  X: IconX,
+};
+
+export {colors, fonts, icons};

@@ -1,4 +1,5 @@
 import React, {useMemo, useState} from 'react';
+import {differenceInCalendarDays} from 'date-fns';
 import {
   SafeAreaView,
   ScrollView,
@@ -9,20 +10,18 @@ import {
   View,
 } from 'react-native';
 import DatePicker from 'react-native-date-picker';
-import {
-  ArrowLeftIcon,
-  CalendarIcon,
-  CheckIcon,
-} from 'react-native-heroicons/solid';
-import SquircleButton from '../components/SquircleButton';
-import {colors, fonts} from '../../utils/constants';
+import {colors, fonts, icons} from '../../utils/constants';
 import {Days} from '../../db';
-import {compareAsc, differenceInCalendarDays} from 'date-fns';
+import {getDate} from '../../utils/date';
+import SquircleButton from '../components/SquircleButton';
+
+const {Back, CalendarEvent, Check} = icons;
 
 const DayScreen = ({navigation}) => {
   const [title, setTitle] = useState('');
   const [counter, setCounter] = useState(null);
-  const [timestamp, setTimestamp] = useState(new Date());
+  const [timestamp, setTimestamp] = useState(getDate(new Date()));
+  const [notify, toggleNotify] = useState(false);
   const [open, setOpen] = useState(false);
   const [needCounter, toggleCounter] = useState(false);
 
@@ -33,13 +32,16 @@ const DayScreen = ({navigation}) => {
   );
 
   const saveData = () => {
-    if (buttonDisabled) return;
+    if (buttonDisabled) {
+      return;
+    }
     const record = {
       title,
       timestamp,
+      notify,
     };
     if (counter) {
-      record.counter = parseInt(counter);
+      record.counter = parseInt(counter, 10);
     }
     Days.insert(record);
     navigation.goBack();
@@ -59,7 +61,7 @@ const DayScreen = ({navigation}) => {
         date={timestamp}
         onConfirm={date => {
           setOpen(false);
-          setTimestamp(date);
+          setTimestamp(getDate(date));
         }}
         onCancel={() => {
           setOpen(false);
@@ -68,7 +70,7 @@ const DayScreen = ({navigation}) => {
       />
       <View className="flex flex-row px-5 text-white w-screen justify-start items-center">
         <SquircleButton onPress={() => navigation.goBack()}>
-          <ArrowLeftIcon size={28} color="black" />
+          <Back size={28} color="black" />
         </SquircleButton>
       </View>
       <Text
@@ -84,6 +86,7 @@ const DayScreen = ({navigation}) => {
           onChangeText={setTitle}
           value={title}
           placeholder="Label"
+          placeholderTextColor={colors.grey.default}
           className="m-8 px-4 rounded-full bg-white text-black h-16"
           style={{fontSize: 16}}
         />
@@ -97,11 +100,11 @@ const DayScreen = ({navigation}) => {
           />
           <View className="flex justify-center items-center px-4">
             <SquircleButton onPress={() => setOpen(true)}>
-              <CalendarIcon size={28} color="black" />
+              <CalendarEvent size={28} color="black" />
             </SquircleButton>
           </View>
         </View>
-        {!isFutureDate && (
+        {!isFutureDate ? (
           <View className="flex flex-row mx-8 justify-between items-center">
             <Text
               className="text-white mx-2"
@@ -118,25 +121,49 @@ const DayScreen = ({navigation}) => {
               thumbColor={colors.white.primary}
             />
           </View>
+        ) : (
+          <View className="flex flex-row mx-8 justify-between items-center">
+            <Text
+              className="text-white mx-2"
+              style={{fontFamily: fonts.MAIN_FONT_SB, fontSize: 24}}>
+              need notification?
+            </Text>
+            <Switch
+              onValueChange={toggleNotify}
+              value={notify}
+              trackColor={{
+                true: colors.blue.primary,
+                false: colors.grey.default,
+              }}
+              thumbColor={colors.white.primary}
+            />
+          </View>
         )}
         {needCounter && (
-          <TextInput
-            onChangeText={text =>
-              setCounter(text === '0' ? '' : text.replace(/\D/g, ''))
-            }
-            value={counter || ''}
-            placeholder="Counter"
-            className="m-8 px-4 rounded-full bg-white text-black h-16 text-right"
-            style={{fontSize: 16}}
-            inputMode="numeric"
-            keyboardType="numeric"
-          />
+          <View className="flex flex-row mx-8 items-center">
+            <TextInput
+              onChangeText={text =>
+                setCounter(text === '0' ? '' : text.replace(/\D/g, ''))
+              }
+              value={counter || ''}
+              placeholder="Counter"
+              className="my-8 px-4 rounded-full bg-white text-black h-16 text-right flex-1 w-100"
+              style={{fontSize: 16}}
+              inputMode="numeric"
+              keyboardType="numeric"
+            />
+            <Text
+              className="text-white mx-3"
+              style={{fontFamily: fonts.MAIN_FONT_SB, fontSize: 24}}>
+              days
+            </Text>
+          </View>
         )}
         <View className="flex flex-row m-9 justify-end">
           <SquircleButton
             onPress={saveData}
             color={buttonDisabled ? colors.grey.default : colors.blue.primary}>
-            <CheckIcon size={28} color="white" />
+            <Check size={28} color="white" />
           </SquircleButton>
         </View>
       </ScrollView>

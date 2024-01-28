@@ -6,23 +6,21 @@ import DayScreen from './screens/day';
 
 const Stack = createNativeStackNavigator();
 
-function App() {
-  return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen
-          name="Home"
-          options={{headerShown: false}}
-          component={DashboardScreen}
-        />
-        <Stack.Screen
-          name="Day"
-          options={{headerShown: false}}
-          component={DayScreen}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
-}
+const App = () => (
+  <NavigationContainer>
+    <Stack.Navigator initialRouteName="Home">
+      <Stack.Screen
+        name="Home"
+        options={{headerShown: false}}
+        component={DashboardScreen}
+      />
+      <Stack.Screen
+        name="Day"
+        options={{headerShown: false}}
+        component={DayScreen}
+      />
+    </Stack.Navigator>
+  </NavigationContainer>
+);
 
 export default App;

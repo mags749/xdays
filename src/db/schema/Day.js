@@ -4,6 +4,7 @@ const DaySchema = {
     title: 'string',
     timestamp: 'datetime',
     counter: '?int',
+    notify: 'boolean',
   },
 };
 
