@@ -8,11 +8,11 @@ import {
 } from 'react-native';
 import {add, differenceInCalendarDays} from 'date-fns';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import notifee, {TriggerType} from '@notifee/react-native';
 import {colors, fonts, icons} from '../../utils/constants';
 import {Days} from '../../db';
 import DayBoard from './DayBoard';
 import SquircleButton from '../components/SquircleButton';
+import {showNotification} from '../../utils/notify';
 
 const {Add} = icons;
 
@@ -29,6 +29,7 @@ const HomeScreen = ({navigation}) => {
       setDaysList(data);
     }
     if (event === 'loaded') {
+      setLoading(true);
       Days.data().forEach(function (item) {
         if (
           item.counter > 0 &&
@@ -37,6 +38,7 @@ const HomeScreen = ({navigation}) => {
           Days.remove(item, true);
         }
       });
+      setLoading(false);
     }
     if (event === 'loaded' || (event === 'remove' && changed.length)) {
       setLoading(false);
@@ -45,33 +47,13 @@ const HomeScreen = ({navigation}) => {
       const {notify, counter} = changed[0];
       if (notify || counter) {
         const {title, timestamp} = changed[0];
-        await notifee.requestPermission();
-
         const newDate = counter ? add(timestamp, {days: counter}) : timestamp;
 
-        const trigger = {
-          type: TriggerType.TIMESTAMP,
-          timestamp: newDate,
-          alarmManager: {
-            allowWhileIdle: true,
-          },
-        };
-
-        const channelId = await notifee.createChannel({
-          id: 'default',
-          name: 'XDays Channel',
+        showNotification({
+          title,
+          body: counter ? "Counter end's today" : 'Today is the Day!',
+          timestamp: newDate.getTime(),
         });
-
-        await notifee.createTriggerNotification(
-          {
-            title,
-            body: counter ? "Counter end's today" : 'Today is the Day!',
-            android: {
-              channelId,
-            },
-          },
-          trigger,
-        );
       }
     }
   };

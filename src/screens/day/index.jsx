@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {differenceInCalendarDays} from 'date-fns';
 import {
   SafeAreaView,
@@ -24,6 +24,12 @@ const DayScreen = ({navigation}) => {
   const [notify, toggleNotify] = useState(false);
   const [open, setOpen] = useState(false);
   const [needCounter, toggleCounter] = useState(false);
+
+  useEffect(() => {
+    if (!counter) {
+      setCounter(null);
+    }
+  }, [counter]);
 
   const buttonDisabled = useMemo(
     () =>
@@ -51,6 +57,18 @@ const DayScreen = ({navigation}) => {
     () => differenceInCalendarDays(timestamp, new Date()) > 0,
     [timestamp],
   );
+
+  const updateCounter = text => {
+    let filteredText = text.replace(/\D/g, '');
+    setCounter(filteredText === '0' ? '' : filteredText);
+  };
+
+  const onBlurCounter = () => {
+    const parsedNumber = parseInt(counter, 10);
+    if (differenceInCalendarDays(new Date(), timestamp) >= parsedNumber) {
+      setCounter(`${differenceInCalendarDays(new Date(), timestamp) + 1}`);
+    }
+  };
 
   return (
     <SafeAreaView className="flex flex-1 text-white bg-black h-screen">
@@ -89,6 +107,7 @@ const DayScreen = ({navigation}) => {
           placeholderTextColor={colors.grey.default}
           className="m-8 px-4 rounded-full bg-white text-black h-16"
           style={{fontSize: 16}}
+          maxLength={50}
         />
         <View className="flex flex-row px-8 m-8 gap-2 items-center">
           <TextInput
@@ -142,15 +161,15 @@ const DayScreen = ({navigation}) => {
         {needCounter && (
           <View className="flex flex-row mx-8 items-center">
             <TextInput
-              onChangeText={text =>
-                setCounter(text === '0' ? '' : text.replace(/\D/g, ''))
-              }
+              onChangeText={updateCounter}
               value={counter || ''}
               placeholder="Counter"
               className="my-8 px-4 rounded-full bg-white text-black h-16 text-right flex-1 w-100"
               style={{fontSize: 16}}
               inputMode="numeric"
               keyboardType="numeric"
+              maxLength={4}
+              onEndEditing={onBlurCounter}
             />
             <Text
               className="text-white mx-3"

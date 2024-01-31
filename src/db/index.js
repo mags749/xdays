@@ -18,8 +18,6 @@ const useVasernData = Table => {
       ((event === 'insert' || event === 'update' || event === 'remove') &&
         changed.length)
     ) {
-      console.info('Updating data');
-      console.info({data: Table.data()});
       setTableData(Table.data());
     }
   });
