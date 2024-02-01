@@ -6,7 +6,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import {add, differenceInCalendarDays} from 'date-fns';
+import {add, differenceInCalendarDays, toDate} from 'date-fns';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {colors, fonts, icons} from '../../utils/constants';
 import {Days} from '../../db';
@@ -47,7 +47,9 @@ const HomeScreen = ({navigation}) => {
       const {notify, counter} = changed[0];
       if (notify || counter) {
         const {title, timestamp} = changed[0];
-        const newDate = counter ? add(timestamp, {days: counter}) : timestamp;
+        const newDate = counter
+          ? add(timestamp, {days: counter})
+          : toDate(timestamp);
 
         showNotification({
           title,

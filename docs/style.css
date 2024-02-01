@@ -1,0 +1,33 @@
+body {
+  font-family: 'Red Hat Mono', monospace;
+  width: 99%;
+  height: 100%;
+  background-color: black;
+  color: white;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Rajdhani', sans-serif;
+}
+
+header {
+  width: calc(100% - 4rem);
+  height: 5rem;
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  padding: 1rem;
+  margin-bottom: 1px solid;
+}
+
+article {
+  width: calc(100% - 4rem);
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  gap: 1rem;
+}
+
+a {
+  color: deepskyblue;
+}

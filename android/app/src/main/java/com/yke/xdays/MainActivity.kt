@@ -1,4 +1,4 @@
-package com.xdays
+package com.yke.xdays
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

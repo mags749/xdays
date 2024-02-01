@@ -1,4 +1,4 @@
-package com.xdays
+package com.yke.xdays
 
 import android.app.Application
 import com.facebook.react.PackageList
