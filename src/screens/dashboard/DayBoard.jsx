@@ -84,7 +84,7 @@ const DayBoard = ({counter, date, index, title, onDelete}) => {
           fillColor: boardColors[index % boardColors.length],
         }}>
         <View
-          className="flex flex-col p-8 w-100 justify-between min-h-80 items-end relative"
+          className="flex flex-col p-8 w-100 justify-between min-h-52 items-end relative"
           style={{rowGap: 10}}>
           <DayBoardTitle title={title} />
           <View

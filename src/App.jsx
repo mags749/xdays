@@ -3,6 +3,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
 import DashboardScreen from './screens/dashboard';
 import DayScreen from './screens/day';
+import "./global.css"
 
 const Stack = createNativeStackNavigator();
 

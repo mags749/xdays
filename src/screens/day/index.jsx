@@ -7,6 +7,7 @@ import {
   Switch,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import DatePicker from 'react-native-date-picker';
@@ -109,14 +110,16 @@ const DayScreen = ({navigation}) => {
           style={{fontSize: 16}}
           maxLength={50}
         />
-        <View className="flex flex-row px-8 m-8 gap-2 items-center">
-          <TextInput
-            value={timestamp.toDateString()}
-            placeholder="Select date"
-            className="px-4 rounded-full bg-white text-black h-16 w-10/12"
-            style={{fontSize: 16}}
-            readOnly
-          />
+        <View className="flex flex-row px-8 my-8 gap-2 items-center justify-between">
+          <TouchableOpacity onPress={() => setOpen(true)} className='w-10/12'>
+            <TextInput
+              value={timestamp.toDateString()}
+              placeholder="Select date"
+              className="px-4 rounded-full bg-white text-black h-16"
+              style={{fontSize: 16}}
+              readOnly
+            />
+          </TouchableOpacity>
           <View className="flex justify-center items-center px-4">
             <SquircleButton onPress={() => setOpen(true)}>
               <CalendarEvent size={28} color="black" />

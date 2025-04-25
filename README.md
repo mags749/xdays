@@ -22,7 +22,7 @@ yarn
 2. Clone the repository and install the dependencies
 
 ```bash
-yarn run android
+yarn run androidpac
 ```
 
 _OR_

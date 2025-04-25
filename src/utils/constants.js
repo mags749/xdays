@@ -6,6 +6,8 @@ import {
   IconHourglassHigh,
   IconPlus,
   IconX,
+  IconSortAscending2,
+  IconSortDescending2,
 } from 'tabler-icons-react-native';
 
 const colors = {
@@ -53,6 +55,8 @@ const icons = {
   Check: IconCheck,
   HourGlass: IconHourglassHigh,
   X: IconX,
+  Ascending: IconSortAscending2,
+  Descending: IconSortDescending2,
 };
 
 export {colors, fonts, icons};

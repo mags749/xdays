@@ -1,9 +1,10 @@
-import React, {useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {
   ActivityIndicator,
   ScrollView,
   StatusBar,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import {add, differenceInCalendarDays, toDate} from 'date-fns';
@@ -14,11 +15,12 @@ import DayBoard from './DayBoard';
 import SquircleButton from '../components/SquircleButton';
 import {showNotification} from '../../utils/notify';
 
-const {Add} = icons;
+const {Add, Ascending, Descending} = icons;
 
 const HomeScreen = ({navigation}) => {
   const [daysList, setDaysList] = useState(Days.data());
   const [loading, setLoading] = useState(true);
+  const [sortAscending, setSortAscending] = useState(true);
 
   const dataChange = async ({event, changed}) => {
     if (
@@ -60,6 +62,24 @@ const HomeScreen = ({navigation}) => {
     }
   };
 
+  const memoDaysList = useMemo(
+    () =>
+      daysList.length
+        ? daysList.sort((a, b) => {
+            const sort = (a, b) =>
+              a.toLowerCase() > b.toLowerCase()
+                ? 1
+                : b.toLowerCase() > a.toLowerCase()
+                ? -1
+                : 0;
+            return !sortAscending
+              ? sort(a.title, b.title)
+              : sort(b.title, a.title);
+          })
+        : daysList,
+    [sortAscending, daysList],
+  );
+
   Days.onChange(dataChange);
 
   return (
@@ -71,32 +91,42 @@ const HomeScreen = ({navigation}) => {
             <Add size={28} color="black" />
           </SquircleButton>
         </View>
-        <View
-          className="flex flex-row items-center px-8 fixed bg-black"
-          style={{marginBottom: 48}}>
-          <Text
-            className="text-white"
-            style={{
-              fontSize: 64,
-              fontFamily: fonts.MAIN_FONT_SB,
-            }}>
-            X
-          </Text>
-          <Text
-            className="text-white"
-            style={{
-              fontSize: 32,
-              fontFamily: fonts.DISPLAY_FONT,
-            }}>
-            days
-          </Text>
+        <View className="flex flex-row justify-between items-center px-8 bg-black/80">
+          <View
+            className="flex flex-row items-center px-8 fixed"
+            style={{marginBottom: 48}}>
+            <Text
+              className="text-white"
+              style={{
+                fontSize: 64,
+                fontFamily: fonts.MAIN_FONT_SB,
+              }}>
+              X
+            </Text>
+            <Text
+              className="text-white"
+              style={{
+                fontSize: 32,
+                fontFamily: fonts.DISPLAY_FONT,
+              }}>
+              days
+            </Text>
+          </View>
+          <TouchableOpacity onPress={() => setSortAscending(!sortAscending)}>
+            {![0, 1].includes(daysList.length) &&
+              (sortAscending ? (
+                <Ascending size={24} color={colors.white.primary} />
+              ) : (
+                <Descending size={24} color={colors.white.primary} />
+              ))}
+          </TouchableOpacity>
         </View>
         {loading ? (
           <ActivityIndicator size="large" color={colors.blue.primary} />
         ) : (
           <GestureHandlerRootView>
-            {daysList.length ? (
-              daysList.map(({timestamp, title, counter, id}, index) => (
+            {memoDaysList.length ? (
+              memoDaysList.map(({timestamp, title, counter, id}, index) => (
                 <DayBoard
                   date={new Date(timestamp)}
                   index={index}
