@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {
   ActivityIndicator,
   ScrollView,
@@ -10,68 +10,55 @@ import {
 import {add, differenceInCalendarDays, toDate} from 'date-fns';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {colors, fonts, icons} from '../../utils/constants';
-import {Days} from '../../db';
+import {observeDays, removeDay, insertDay} from '../../db';
 import DayBoard from './DayBoard';
 import SquircleButton from '../components/SquircleButton';
-import {showNotification} from '../../utils/notify';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 const {Add, Ascending, Descending} = icons;
 
 const HomeScreen = ({navigation}) => {
-  const [daysList, setDaysList] = useState(Days.data());
+  const [daysList, setDaysList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortAscending, setSortAscending] = useState(true);
 
-  const dataChange = async ({event, changed}) => {
-    if (
-      event === 'loaded' ||
-      ((event === 'insert' || event === 'remove') && changed.length)
-    ) {
-      const data = Days.data();
-      setDaysList(data);
-    }
-    if (event === 'loaded') {
-      setLoading(true);
-      Days.data().forEach(function (item) {
+  useEffect(() => {
+    // Subscribe to live WatermelonDB query
+    const subscription = observeDays().subscribe(async records => {
+      // Auto-delete expired counter entries
+      const now = new Date();
+      for (const item of records) {
         if (
           item.counter > 0 &&
-          differenceInCalendarDays(new Date(), item.timestamp) > item.counter
+          differenceInCalendarDays(now, new Date(item.timestamp)) > item.counter
         ) {
-          Days.remove(item, true);
+          await removeDay(item.id);
         }
-      });
-      setLoading(false);
-    }
-    if (event === 'loaded' || (event === 'remove' && changed.length)) {
-      setLoading(false);
-    }
-    if (event === 'insert') {
-      const {notify, counter} = changed[0];
-      if (notify || counter) {
-        const {title, timestamp} = changed[0];
-        const newDate = counter
-          ? add(timestamp, {days: counter})
-          : toDate(timestamp);
-
-        showNotification({
-          title,
-          body: counter ? "Counter end's today" : 'Today is the Day!',
-          timestamp: newDate.getTime(),
-        });
       }
-    }
+      // Re-query after potential deletions — the observable will fire again
+      setDaysList(records);
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleDelete = async id => {
+    setLoading(true);
+    await removeDay(id);
+    // Loading will be reset by the subscription update
   };
 
   const memoDaysList = useMemo(
     () =>
       daysList.length
-        ? daysList.sort((a, b) => {
+        ? [...daysList].sort((a, b) => {
             const sort = (a, b) =>
               a.toLowerCase() > b.toLowerCase()
                 ? 1
                 : b.toLowerCase() > a.toLowerCase()
-                ? -1
-                : 0;
+                  ? -1
+                  : 0;
             return !sortAscending
               ? sort(a.title, b.title)
               : sort(b.title, a.title);
@@ -80,10 +67,8 @@ const HomeScreen = ({navigation}) => {
     [sortAscending, daysList],
   );
 
-  Days.onChange(dataChange);
-
   return (
-    <View className="flex flex-1 text-white bg-black h-screen">
+    <SafeAreaView className="flex flex-1 text-white bg-black h-screen">
       <StatusBar style="light" backgroundColor={colors.black.default} />
       <ScrollView style={{gap: 5}} stickyHeaderIndices={[1]}>
         <View className="flex flex-row px-5 text-white w-screen justify-end items-center">
@@ -131,12 +116,9 @@ const HomeScreen = ({navigation}) => {
                   date={new Date(timestamp)}
                   index={index}
                   counter={counter}
-                  key={index}
+                  key={id}
                   title={title}
-                  onDelete={() => {
-                    setLoading(true);
-                    Days.remove(id, true);
-                  }}
+                  onDelete={() => handleDelete(id)}
                 />
               ))
             ) : (
@@ -152,7 +134,7 @@ const HomeScreen = ({navigation}) => {
           </GestureHandlerRootView>
         )}
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 

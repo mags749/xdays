@@ -37,7 +37,7 @@ react {
     // bundleAssetName = "MyApplication.android.bundle"
     //
     //   The entry file for bundle generation. Default is 'index.android.js' or 'index.js'
-    // entryFile = file("../js/MyAPplication.android.js")
+    // entryFile = file("../js/MyApplication.android.js")
     //
     //   A list of extra flags to pass to the 'bundle' commands.
     //   See https://github.com/react-native-community/cli/blob/main/docs/commands.md#bundle
@@ -63,14 +63,14 @@ def enableProguardInReleaseBuilds = false
  * The preferred build flavor of JavaScriptCore (JSC)
  *
  * For example, to use the international variant, you can use:
- * `def jscFlavor = 'org.webkit:android-jsc-intl:+'`
+ * `def jscFlavor = io.github.react-native-community:jsc-android-intl:2026004.+`
  *
  * The international variant includes ICU i18n library and necessary data
  * allowing to use e.g. `Date.toLocaleString` and `String.localeCompare` that
  * give correct results when using with locales other than en-US. Note that
  * this variant is about 6MiB larger per architecture than default.
  */
-def jscFlavor = 'org.webkit:android-jsc:+'
+def jscFlavor = 'io.github.react-native-community:jsc-android:2026004.+'
 
 android {
     ndkVersion rootProject.ext.ndkVersion
@@ -82,9 +82,8 @@ android {
         applicationId "com.yke.xdays"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 4
-        versionName "1.0.3"
-        resConfigs "en"
+        versionCode 9
+        versionName "1.1.1"
     }
     signingConfigs {
         debug {
@@ -114,6 +113,13 @@ android {
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
+    packagingOptions {
+        // This prevents the duplicate classes from being merged into the APK
+        exclude '**/com.swmansion.worklets.**'
+
+        // Pick the first one it finds (usually Reanimated's version)
+        pickFirst '**/com/swmansion/worklets/AndroidUIScheduler$1.dex'
+    }
 }
 
 dependencies {
@@ -124,5 +130,8 @@ dependencies {
         implementation("com.facebook.react:hermes-android")
     } else {
         implementation jscFlavor
+    }
+    implementation(project(':react-native-reanimated')) {
+        exclude group: 'com.swmansion.worklets'
     }
 }

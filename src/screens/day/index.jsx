@@ -1,7 +1,6 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {differenceInCalendarDays} from 'date-fns';
 import {
-  SafeAreaView,
   ScrollView,
   StatusBar,
   Switch,
@@ -11,10 +10,13 @@ import {
   View,
 } from 'react-native';
 import DatePicker from 'react-native-date-picker';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import {colors, fonts, icons} from '../../utils/constants';
-import {Days} from '../../db';
+import {insertDay} from '../../db';
 import {getDate} from '../../utils/date';
 import SquircleButton from '../components/SquircleButton';
+import {showNotification} from '../../utils/notify';
+import {add, toDate} from 'date-fns';
 
 const {Back, CalendarEvent, Check} = icons;
 
@@ -38,7 +40,7 @@ const DayScreen = ({navigation}) => {
     [title, needCounter, counter],
   );
 
-  const saveData = () => {
+  const saveData = async () => {
     if (buttonDisabled) {
       return;
     }
@@ -50,7 +52,22 @@ const DayScreen = ({navigation}) => {
     if (counter) {
       record.counter = parseInt(counter, 10);
     }
-    Days.insert(record);
+
+    await insertDay(record);
+
+    // Schedule notification if needed
+    if (notify || counter) {
+      const newDate = counter
+        ? add(timestamp, {days: parseInt(counter, 10)})
+        : toDate(timestamp);
+
+      showNotification({
+        title,
+        body: counter ? "Counter end's today" : 'Today is the Day!',
+        timestamp: newDate.getTime(),
+      });
+    }
+
     navigation.goBack();
   };
 
@@ -111,7 +128,7 @@ const DayScreen = ({navigation}) => {
           maxLength={50}
         />
         <View className="flex flex-row px-8 my-8 gap-2 items-center justify-between">
-          <TouchableOpacity onPress={() => setOpen(true)} className='w-10/12'>
+          <TouchableOpacity onPress={() => setOpen(true)} className="w-10/12">
             <TextInput
               value={timestamp.toDateString()}
               placeholder="Select date"
