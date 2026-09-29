@@ -7,7 +7,7 @@ import {
   intervalToDuration,
 } from 'date-fns';
 import {SquircleView} from 'react-native-figma-squircle';
-import {Swipeable} from 'react-native-gesture-handler';
+import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import {Text, View} from 'react-native';
 import {colors, fonts, icons} from '../../utils/constants';
 import {getDate} from '../../utils/date';
@@ -95,7 +95,7 @@ const DayBoard = ({counter, date, index, title, onDelete}) => {
                 <View className="flex flex-col items-end opacity-50">
                   <CalenderDate size={16} color={colors.black.default} />
                   <Text style={{fontSize: 16, color: colors.black.default}}>
-                    It's the{' '}
+                    It&apos;s the{' '}
                   </Text>
                 </View>
                 <Text

@@ -2,15 +2,13 @@ import React, {useEffect, useMemo, useState} from 'react';
 import {
   ActivityIndicator,
   ScrollView,
-  StatusBar,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import {add, differenceInCalendarDays, toDate} from 'date-fns';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {colors, fonts, icons} from '../../utils/constants';
-import {observeDays, removeDay, insertDay} from '../../db';
+import {observeDays, removeDay} from '../../db';
+import {cancelNotification} from '../../utils/notify';
 import DayBoard from './DayBoard';
 import SquircleButton from '../components/SquircleButton';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -23,30 +21,19 @@ const HomeScreen = ({navigation}) => {
   const [sortAscending, setSortAscending] = useState(true);
 
   useEffect(() => {
-    // Subscribe to live WatermelonDB query
-    const subscription = observeDays().subscribe(async records => {
-      // Auto-delete expired counter entries
-      const now = new Date();
-      for (const item of records) {
-        if (
-          item.counter > 0 &&
-          differenceInCalendarDays(now, new Date(item.timestamp)) > item.counter
-        ) {
-          await removeDay(item.id);
-        }
-      }
-      // Re-query after potential deletions — the observable will fire again
+    // Live list of days (expired counters are purged inside the db layer).
+    // Re-runs on every insert/delete, and returns the unsubscribe function.
+    return observeDays(records => {
       setDaysList(records);
       setLoading(false);
     });
-
-    return () => subscription.unsubscribe();
   }, []);
 
   const handleDelete = async id => {
     setLoading(true);
-    await removeDay(id);
-    // Loading will be reset by the subscription update
+    const notificationId = await removeDay(id);
+    // The subscription above resets `loading` once the list updates.
+    cancelNotification(notificationId).catch(() => {});
   };
 
   const memoDaysList = useMemo(
@@ -69,7 +56,6 @@ const HomeScreen = ({navigation}) => {
 
   return (
     <SafeAreaView className="flex flex-1 text-white bg-black h-screen">
-      <StatusBar style="light" backgroundColor={colors.black.default} />
       <ScrollView style={{gap: 5}} stickyHeaderIndices={[1]}>
         <View className="flex flex-row px-5 text-white w-screen justify-end items-center">
           <SquircleButton onPress={() => navigation.navigate('Day')}>
@@ -109,7 +95,7 @@ const HomeScreen = ({navigation}) => {
         {loading ? (
           <ActivityIndicator size="large" color={colors.blue.primary} />
         ) : (
-          <GestureHandlerRootView>
+          <>
             {memoDaysList.length ? (
               memoDaysList.map(({timestamp, title, counter, id}, index) => (
                 <DayBoard
@@ -131,7 +117,7 @@ const HomeScreen = ({navigation}) => {
                 </Text>
               </View>
             )}
-          </GestureHandlerRootView>
+          </>
         )}
       </ScrollView>
     </SafeAreaView>

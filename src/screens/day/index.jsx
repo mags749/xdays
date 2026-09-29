@@ -1,8 +1,7 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import {differenceInCalendarDays} from 'date-fns';
+import {add, differenceInCalendarDays, toDate} from 'date-fns';
 import {
   ScrollView,
-  StatusBar,
   Switch,
   Text,
   TextInput,
@@ -12,11 +11,10 @@ import {
 import DatePicker from 'react-native-date-picker';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {colors, fonts, icons} from '../../utils/constants';
-import {insertDay} from '../../db';
+import {insertDay, setNotificationId} from '../../db';
 import {getDate} from '../../utils/date';
 import SquircleButton from '../components/SquircleButton';
 import {showNotification} from '../../utils/notify';
-import {add, toDate} from 'date-fns';
 
 const {Back, CalendarEvent, Check} = icons;
 
@@ -36,7 +34,7 @@ const DayScreen = ({navigation}) => {
 
   const buttonDisabled = useMemo(
     () =>
-      title === '' || (needCounter ? counter === '' || counter === '0' : false),
+      title === '' || (needCounter ? !counter || counter === '0' : false),
     [title, needCounter, counter],
   );
 
@@ -44,28 +42,33 @@ const DayScreen = ({navigation}) => {
     if (buttonDisabled) {
       return;
     }
-    const record = {
+    const counterDays = needCounter && counter ? parseInt(counter, 10) : null;
+    const id = await insertDay({
       title,
       timestamp,
       notify,
-    };
-    if (counter) {
-      record.counter = parseInt(counter, 10);
-    }
+      counter: counterDays,
+    });
 
-    await insertDay(record);
+    // Schedule a local notification if needed
+    if (notify || counterDays) {
+      try {
+        const target = counterDays
+          ? add(timestamp, {days: counterDays})
+          : toDate(timestamp);
 
-    // Schedule notification if needed
-    if (notify || counter) {
-      const newDate = counter
-        ? add(timestamp, {days: parseInt(counter, 10)})
-        : toDate(timestamp);
-
-      showNotification({
-        title,
-        body: counter ? "Counter end's today" : 'Today is the Day!',
-        timestamp: newDate.getTime(),
-      });
+        const notificationId = await showNotification({
+          title,
+          body: counterDays ? "Counter end's today" : 'Today is the Day!',
+          timestamp: target.getTime(),
+        });
+        if (notificationId) {
+          await setNotificationId(id, notificationId);
+        }
+      } catch (e) {
+        // Never block saving because a reminder couldn't be scheduled
+        console.warn('Could not schedule notification', e);
+      }
     }
 
     navigation.goBack();
@@ -90,7 +93,6 @@ const DayScreen = ({navigation}) => {
 
   return (
     <SafeAreaView className="flex flex-1 text-white bg-black h-screen">
-      <StatusBar style="light" backgroundColor={colors.black.default} />
       <DatePicker
         modal
         open={open}
