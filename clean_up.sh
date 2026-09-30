@@ -21,5 +21,5 @@ if [ -d "android" ] || [ -d "ios" ]; then
 fi
 
 echo "✅ Cleanup complete! Reinstalling dependencies..."
-npm install
+pnpm install
 echo "👉 Run 'npx expo prebuild --clean' or 'npx expo run:android' to regenerate native projects."

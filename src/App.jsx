@@ -6,9 +6,9 @@ import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {StatusBar} from 'expo-status-bar';
 import {useFonts} from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
-import DashboardScreen from './screens/dashboard';
-import DayScreen from './screens/day';
-import {fontFiles} from './utils/fonts';
+import {DashboardScreen} from './features/dashboard';
+import {DayScreen} from './features/day';
+import {fontFiles} from './shared/utils/fonts';
 import './global.css';
 
 SplashScreen.preventAutoHideAsync();
